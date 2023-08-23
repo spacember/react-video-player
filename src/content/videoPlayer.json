@@ -1,0 +1,23 @@
+{
+    "autoplay": true,
+    "captions": [
+        {
+            "description": "English",
+            "fileName": "caption-en.txt",
+            "url": "https://assets.ctfassets.net/9wtva4vhlgxb/3mhMUxRDCjUIqiLwzN8ln3/f941f644ff877b8d380a81c2c51b0fe8/caption-en.txt"
+        },
+        {
+            "description": "French",
+            "fileName": "caption-fr.txt",
+            "url": "https://assets.ctfassets.net/9wtva4vhlgxb/3mhMUxRDCjUIqiLwzN8ln3/f941f644ff877b8d380a81c2c51b0fe8/caption-en.txt"
+        }
+    ],
+    "defaultVolume": 0.4,
+    "lazyload": true,
+    "showMuteUnmute": true,
+    "showPlayPause": true,
+    "showRemainingTime": true,
+    "showSeekbar": false,
+    "showVolume": true,
+    "videoUrl": "https://videos.ctfassets.net/9wtva4vhlgxb/1BTwGoxZj5nBxb2nd5iwwI/f59fb79879af712030e34d1ac86122de/720p.mp4"
+}
