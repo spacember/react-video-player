@@ -9,9 +9,7 @@ export interface ICaptionProps {
 }
 
 export interface IVideoPlayerProps {
-  autoplay: boolean;
   captions?: ICaptionProps[];
-  className?: string;
   defaultVolume?: number;
   imageUrl?: string;
   showMuteUnmute?: boolean;
@@ -19,60 +17,116 @@ export interface IVideoPlayerProps {
   showRemainingTime?: boolean;
   showSeekbar?: boolean;
   showVolume?: boolean;
-  videoUrl?: string;
+  threshold?: number;
+  url?: string;
 }
 
+const setDefaultVolume = (
+  videoRef: React.RefObject<HTMLVideoElement>,
+  volume?: number
+) => videoRef && videoRef.current && (videoRef.current.volume = volume || 0.4);
+
+const isIntersecting =
+  (entry?: IntersectionObserverEntry, imageUrl?: string) => () =>
+    !imageUrl && entry?.isIntersecting;
+
+const pauseVideo = (videoRef: React.RefObject<HTMLVideoElement>): void =>
+  videoRef.current?.pause();
+
+const playVideo = async (
+  videoRef: React.RefObject<HTMLVideoElement>
+): Promise<void> => await videoRef.current?.play();
+
 const VideoPlayer: React.FC<IVideoPlayerProps> = ({
-  autoplay = true,
   captions,
-  className,
-  defaultVolume = 0.4,
+  defaultVolume,
   imageUrl,
-  showMuteUnmute = true,
-  showPlayPause = true,
-  showRemainingTime = true,
-  showSeekbar = false,
-  showVolume = false,
-  videoUrl,
+  showMuteUnmute,
+  showPlayPause,
+  showRemainingTime,
+  showSeekbar,
+  showVolume,
+  threshold,
+  url,
 }) => {
-  const ref = useRef<HTMLVideoElement | null>(null);
-  const entry = useIntersectionObserver(ref, { threshold: 0.5 });
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const playVideo = () => ref.current?.play();
+  // button references
+  const decreaseVolumeRef = useRef<HTMLButtonElement>(null);
+  const fullScreenRef = useRef<HTMLButtonElement>(null);
+  const increaseVolumeRef = useRef<HTMLButtonElement>(null);
+  const muteUnmuteRef = useRef<HTMLButtonElement>(null);
+  const playPauseRef = useRef<HTMLButtonElement>(null);
 
-  const pauseVideo = () => ref.current?.pause();
+  // initial setup
+  setDefaultVolume(videoRef, defaultVolume);
 
-  const isIntersecting = useMemo(() => {
-    return entry?.isIntersecting;
-  }, [entry]);
+  // intersection observer
+  const entry = useIntersectionObserver(videoRef, { threshold });
+  const isEntryInView = useMemo(isIntersecting(entry, imageUrl), [entry]);
 
   useEffect(() => {
-    isIntersecting ? playVideo() : pauseVideo();
-  }, [isIntersecting]);
+    isEntryInView ? playVideo(videoRef) : pauseVideo(videoRef);
+  }, [isEntryInView]);
+
+  // event listeners
+  const toggleMuteUnmute = (_event: React.MouseEvent<HTMLElement>) =>
+    (videoRef.current!.muted = !videoRef.current!.muted);
+
+  const togglePlayPause = (_event: React.MouseEvent<HTMLElement>) =>
+    videoRef.current?.paused ? playVideo(videoRef) : pauseVideo(videoRef);
+
+  const canToggleVolume = (): boolean =>
+    videoRef.current!.volume < 0.9 && videoRef.current!.volume > 0.1;
+
+  const increaseVolumeByTenPercent = (_event: React.MouseEvent<HTMLElement>) =>
+    canToggleVolume() && (videoRef.current!.volume += 0.1);
+
+  const decreaseVolumeByTenPercent = (_event: React.MouseEvent<HTMLElement>) =>
+    canToggleVolume() && (videoRef.current!.volume -= 0.1);
+
+  const canFullScreen = (): boolean => document.fullscreenEnabled;
+
+  const isFullScreen = (): boolean => !!document.fullscreenElement;
+
+  const toggleFullScreen = async (_event: React.MouseEvent<HTMLElement>) =>
+    canFullScreen() && isFullScreen()
+      ? document.exitFullscreen()
+      : videoRef.current?.requestFullscreen();
 
   return (
     <figure>
-      <video autoPlay={autoplay} muted={true} poster={imageUrl} ref={ref}>
-        <source src={videoUrl} type="video/mp4" />
+      <video muted={true} poster={imageUrl} ref={videoRef}>
+        <source src={url} type="video/mp4" />
       </video>
       <ul className="controls">
         <li className="progress">
           <progress value="0"></progress>
         </li>
         <li>
-          <button type="button">Play/Pause</button>
+          <button onClick={togglePlayPause} ref={playPauseRef}>
+            Play/Pause
+          </button>
         </li>
         <li>
-          <button type="button">Mute/Unmute</button>
+          <button onClick={toggleMuteUnmute} ref={muteUnmuteRef}>
+            Mute/Unmute
+          </button>
         </li>
         <li>
-          <button type="button">Vol+</button>
+          <button onClick={increaseVolumeByTenPercent} ref={increaseVolumeRef}>
+            Vol+
+          </button>
         </li>
         <li>
-          <button type="button">Vol-</button>
+          <button onClick={decreaseVolumeByTenPercent} ref={decreaseVolumeRef}>
+            Vol-
+          </button>
         </li>
         <li>
-          <button type="button">Fullscreen</button>
+          <button onClick={toggleFullScreen} ref={fullScreenRef}>
+            Fullscreen
+          </button>
         </li>
       </ul>
     </figure>
