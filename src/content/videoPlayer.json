@@ -1,5 +1,4 @@
 {
-    "autoplay": true,
     "captions": [
         {
             "description": "English",
@@ -13,11 +12,13 @@
         }
     ],
     "defaultVolume": 0.4,
+    "imageUrl": "https://media.cntraveller.com/photos/611bf0b8f6bd8f17556db5e4/4:3/w_2664,h_1998,c_limit/gettyimages-1146431497.jpg",
     "lazyload": true,
     "showMuteUnmute": true,
     "showPlayPause": true,
     "showRemainingTime": true,
     "showSeekbar": false,
     "showVolume": true,
-    "videoUrl": "https://videos.ctfassets.net/9wtva4vhlgxb/1BTwGoxZj5nBxb2nd5iwwI/f59fb79879af712030e34d1ac86122de/720p.mp4"
+    "threshold": 0.5,
+    "url": "https://videos.ctfassets.net/9wtva4vhlgxb/1BTwGoxZj5nBxb2nd5iwwI/f59fb79879af712030e34d1ac86122de/720p.mp4"
 }
